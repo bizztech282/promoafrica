@@ -3,7 +3,7 @@ services:
     name: skiza-spin-win
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn skiza_project.wsgi:application"
+    startCommand: "python manage.py migrate && gunicorn skiza_project.wsgi:application"
     plan: free
     envVars:
       - key: PYTHON_VERSION
