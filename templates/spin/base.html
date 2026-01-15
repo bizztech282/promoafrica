@@ -22,17 +22,34 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
     <!-- Custom Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#FF6B35',
-                        secondary: '#FFD166',
-                        success: '#06D6A0',
-                        danger: '#EF476F',
-                        purple: '#7209B7',
+                        primary: '#FFD700', // Gold
+                        secondary: '#FFA000', // Amber
+                        accent: '#EF4444', // Red for urgency
+                        dark: '#0b0b0b', // Premium Dark
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    backgroundImage: {
+                        'gold-gradient': 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
+                        'premium-dark': 'radial-gradient(circle at center, #1a1a1a 0%, #0b0b0b 100%)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shine': 'shine 2s infinite',
+                    },
+                    keyframes: {
+                        shine: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        }
                     }
                 }
             }
@@ -42,12 +59,19 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@700&display=swap"
         rel="stylesheet">
 
     <style type="text/tailwindcss">
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0b0b0b;
+            color: #ffffff;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
         }
         
         /* Custom animations */
@@ -56,50 +80,55 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
         
         .fade-in {
-            animation: fadeIn 0.6s ease-out;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
+        .slide-up {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
-        /* Gradient background - Darker Theme */
-        .gradient-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        /* Premium Backgrounds */
+        .premium-bg {
+            @apply bg-premium-dark;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Gold Gradient Text */
+        .text-gold {
+            background: linear-gradient(to bottom, #FCD34D, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        /* Glass morphism effect */
-        .glass {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* Buttons */
+        .btn-gold {
+            background: linear-gradient(135deg, #FCD34D 0%, #D97706 100%);
+            @apply text-black font-bold py-4 px-8 rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(251,191,36,0.4)] hover:shadow-[0_0_30px_rgba(251,191,36,0.6)] hover:scale-105 active:scale-95 border-b-4 border-yellow-700;
         }
-        
-        /* Button hover effects */
-        .btn-primary {
-            @apply bg-primary text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
-        }
-        
-        .btn-secondary {
-            @apply bg-secondary text-gray-900 font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
+
+        .btn-glass {
+            @apply bg-white/10 text-white border border-white/20 font-semibold py-3 px-6 rounded-lg transition-all hover:bg-white/20;
         }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="min-h-screen gradient-bg">
+<body class="min-h-screen premium-bg text-gray-100 overflow-x-hidden">
     <!-- Navigation -->
     <nav class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-b border-white border-opacity-20">
         <div class="container mx-auto px-4 py-4">

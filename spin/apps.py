@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class WheelSpinConfig(AppConfig):
+class SpinConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'wheel_spin'
+    name = 'spin'
     verbose_name = 'Skiza Wheel Spin'

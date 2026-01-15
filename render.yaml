@@ -1,14 +1,19 @@
 services:
   - type: web
-    name: skiza-spin-win
+    name: skiza-promo
     env: python
-    buildCommand: "./build.sh"
-    startCommand: "python manage.py migrate && gunicorn skiza_project.wsgi:application"
-    plan: free
+    buildCommand: ./build.sh
+    startCommand: "python manage.py migrate && gunicorn app.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --access-logfile -"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: SECRET_KEY
+        value: 3.10.12
+      - key: DJANGO_SETTINGS_MODULE
+        value: app.settings.production
+      - key: DJANGO_SECRET_KEY
         generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com
       - key: WEB_CONCURRENCY
         value: 2

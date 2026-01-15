@@ -1,9 +1,9 @@
 """
-ASGI config for skiza_project.
+ASGI config for app.
 """
 import os
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skiza_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings.production')
 
 application = get_asgi_application()

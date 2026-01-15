@@ -1,0 +1,531 @@
+{% extends 'spin/base.html' %}
+
+{% block title %}Spin & Win - Skiza Promo{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto relative pb-24 pt-4">
+    <!-- Social Proof Toast -->
+    <div id="socialToast"
+        class="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 bg-black/80 backdrop-blur-md border border-yellow-500/20 rounded-full px-5 py-2.5 flex items-center gap-3 shadow-2xl transition-all duration-500 pointer-events-none opacity-0 translate-y-[-10px]">
+        <span class="text-xl">🎉</span>
+        <div>
+            <p class="text-xs text-yellow-500 font-bold uppercase tracking-wider">Just Won</p>
+            <p class="text-sm text-white font-medium" id="socialText">Brian won Ksh 800</p>
+        </div>
+    </div>
+
+    {% csrf_token %}
+
+    <!-- Hero Section -->
+    <div class="text-center mb-8 fade-in relative z-10">
+        <h1
+            class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 mb-2 drop-shadow-sm">
+            Skiza <span class="text-gold">Spin & Win</span>
+        </h1>
+        <div
+            class="h-1 w-24 mx-auto bg-gradient-to-r from-transparent via-yellow-500 to-transparent rounded-full opacity-50 mb-3">
+        </div>
+        <p class="text-gray-400 text-sm font-medium tracking-wide uppercas">Daily Guaranteed Wins</p>
+    </div>
+
+    <!-- Wheel Container -->
+    <div class="relative mb-10 fade-in px-4">
+        <!-- Glow Behind -->
+        <div
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] bg-yellow-600/20 blur-[60px] rounded-full pointer-events-none">
+        </div>
+
+        <!-- Wheel Wrapper -->
+        <div class="relative w-[340px] h-[340px] mx-auto">
+            <!-- Pointer -->
+            <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20 filter drop-shadow-lg">
+                <div class="w-8 h-10 bg-gradient-to-b from-yellow-300 to-yellow-600 clip-arrow shadow-xl"></div>
+            </div>
+
+            <canvas id="wheelCanvas" width="680" height="680"
+                class="w-full h-full transform transition-transform duration-[3s] ease-out shadow-2xl rounded-full"></canvas>
+
+            <!-- Center Pin -->
+            <div
+                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 shadow-[0_0_15px_rgba(0,0,0,0.5)] z-20 flex items-center justify-center border-2 border-yellow-100/50">
+                <div
+                    class="w-12 h-12 rounded-full bg-gradient-to-br from-black to-gray-800 flex items-center justify-center">
+                    <span class="text-yellow-500 font-bold text-xs tracking-widest">SPIN</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Area -->
+    <div class="px-6 text-center space-y-6 relative z-20">
+        <button id="spinButton"
+            class="w-full btn-gold text-xl uppercase tracking-wider relative overflow-hidden group animate-pulse-slow">
+            <span class="relative z-10 flex items-center justify-center gap-2">
+                <span>🎲</span> Spin To Win
+            </span>
+            <div class="absolute inset-0 bg-white/20 transform -translate-x-full skew-x-12 group-hover:animate-shine">
+            </div>
+        </button>
+
+        <!-- Trust Badge -->
+        <div
+            class="grid grid-cols-3 gap-2 text-[10px] text-gray-500 font-medium uppercase tracking-wide border-t border-white/5 pt-6">
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-xl">🔒</span>
+                <span>Secure</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-xl">✅</span>
+                <span>Safaricom</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-xl">⚡</span>
+                <span>Instant</span>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-2 text-xs text-gray-600 mt-2">
+            <span>Powered by</span>
+            <span class="font-bold text-gray-500">Safaricom Skiza</span>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Sheet Modal (Win & Withdraw) -->
+<div id="winModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+
+    <!-- Sheet -->
+    <div class="absolute bottom-0 left-0 right-0 bg-[#121212] rounded-t-3xl border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] transform translate-y-full transition-transform duration-500 ease-out max-h-[90vh] overflow-y-auto"
+        id="modalSheet">
+        <!-- Drag Handle -->
+        <div class="w-12 h-1.5 bg-gray-700/50 rounded-full mx-auto mt-4 mb-6"></div>
+
+        <div class="px-6 pb-12">
+            <!-- Step 1: Win Success -->
+            <div id="step1" class="text-center space-y-6">
+                <div
+                    class="w-20 h-20 mx-auto bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 mb-2">
+                    <span class="text-4xl animate-bounce">🏆</span>
+                </div>
+
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-2">You Won!</h2>
+                    <p class="text-4xl font-extrabold text-gold drop-shadow-md">KSH <span id="winAmount">800</span></p>
+                </div>
+
+                <div class="bg-gray-800/50 rounded-xl p-4 border border-white/5 text-left">
+                    <label class="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-2 ml-1">M-Pesa
+                        Number</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-400 text-lg">🇰🇪</span>
+                        </div>
+                        <input type="tel" id="mobileNumber"
+                            class="w-full bg-black/50 border border-gray-700 rounded-lg py-4 pl-12 pr-4 text-white text-lg font-mono focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none transition-colors"
+                            placeholder="0712 345 678" maxlength="15">
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <span id="carrierIcon"
+                                class="hidden text-xs font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300">SAF</span>
+                        </div>
+                    </div>
+                    <p class="text-red-500 text-xs mt-2 hidden flex items-center gap-1" id="phoneError">
+                        <span>⚠️</span> Please enter a valid Safaricom number
+                    </p>
+                </div>
+
+                <button id="withdrawBtn"
+                    class="w-full btn-gold flex items-center justify-center gap-2 text-lg group disabled:grayscale disabled:opacity-50">
+                    <span>Withdraw Now</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+
+                <p class="text-[10px] text-gray-500 text-center">
+                    By withdrawing, you agree to the <a href="{% url 'terms_and_conditions' %}"
+                        class="underline hover:text-white">Terms</a>. <br>
+                    Payments processed via Skiza.
+                </p>
+            </div>
+
+            <!-- Step 2: Subscription (Hidden) -->
+            <div id="step2" class="hidden text-center space-y-6 fade-in">
+                <div
+                    class="w-16 h-16 mx-auto bg-yellow-500/10 rounded-full flex items-center justify-center border border-yellow-500/20 animate-pulse">
+                    <span class="text-2xl">📲</span>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">Final Step</h2>
+                    <p class="text-gray-400 text-sm">Dial the code below to complete withdrawal of <span
+                            class="text-white font-bold">Ksh 800</span></p>
+                </div>
+
+                <div class="bg-gray-800/80 rounded-2xl p-6 border border-yellow-500/30 relative overflow-hidden">
+                    <div
+                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent">
+                    </div>
+                    <p class="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-3">Dial on your phone</p>
+
+                    <div
+                        class="flex items-center justify-between bg-black/40 rounded-lg p-4 border border-white/5 mb-4">
+                        <code class="text-2xl font-mono text-white tracking-widest" id="ussdCode">*860*860#</code>
+                        <button id="copyBtn" class="text-gray-400 hover:text-white p-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <a href="#" id="dialLink"
+                        class="w-full btn-gold block py-3 rounded-lg font-bold text-black shadow-lg mb-3">
+                        📞 Dial Now
+                    </a>
+                    <button id="checkStatusBtn" class="text-sm text-yellow-500 font-medium hover:underline">
+                        I have dialed the code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .clip-arrow {
+        clip-path: polygon(50% 100%, 0 0, 100% 0);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- State ---
+        const state = {
+            prizes: [100, 200, 300, 500, 800, 1000, 1500, 2000, 2500, 4000, 5000, 800],
+            segments: 12,
+            isSpinning: false,
+            currentRotation: 0,
+            modalOpen: false
+        };
+
+        // --- Elements ---
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinButton');
+        const modal = document.getElementById('winModal');
+        const modalSheet = document.getElementById('modalSheet');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const phoneInput = document.getElementById('mobileNumber');
+        const carrierIcon = document.getElementById('carrierIcon');
+
+        // --- High-DPI Canvas Scaling ---
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        // --- Wheel Drawing ---
+        function drawWheel() {
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            const sliceAngle = (2 * Math.PI) / state.segments;
+
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            // Outer Rim
+            const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+            gradient.addColorStop(0, '#B45309'); // Amber 700
+            gradient.addColorStop(0.5, '#FCD34D'); // Amber 300
+            gradient.addColorStop(1, '#78350F'); // Amber 900
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 8, 0, 2 * Math.PI);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Segments
+            state.prizes.forEach((prize, i) => {
+                const startAngle = (i * sliceAngle) - (Math.PI / 2);
+                const endAngle = startAngle + sliceAngle;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+
+                // Alternating Colors
+                const isGold = i % 2 === 0;
+
+                if (isGold) {
+                    const segGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                    segGrad.addColorStop(0, '#FCD34D');
+                    segGrad.addColorStop(1, '#F59E0B');
+                    ctx.fillStyle = segGrad;
+                } else {
+                    const segGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                    segGrad.addColorStop(0, '#333');
+                    segGrad.addColorStop(1, '#111');
+                    ctx.fillStyle = segGrad;
+                }
+
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.stroke();
+
+                // Text
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = isGold ? '#78350F' : '#FCD34D';
+                ctx.font = 'bold 16px Inter';
+                ctx.fillText('Ksh ' + prize, radius - 20, 5);
+                ctx.restore();
+            });
+        }
+
+        drawWheel();
+
+        // --- Interaction Logic ---
+        async function performSpin() {
+            if (state.isSpinning) return;
+            state.isSpinning = true;
+            spinBtn.disabled = true;
+            spinBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            spinBtn.classList.remove('animate-pulse-slow');
+            canvas.classList.add('blur-[2px]'); // Motion blur
+
+            // Haptic
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            // API Call
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const res = await fetch("{% url 'spin_wheel' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const targetPrize = parseInt(data.amount); // Should be 800
+                    // Find index of 800 (There are multiple, pick one)
+                    // We hardcoded logic to land on 800.
+                    // Let's find the index of 800 in our prizes array
+                    // logic: prizes[4] is 800.
+                    const targetIndex = 4; // 5th item
+
+                    // Calculate rotation
+                    // we want the target segment to be at -PI/2 (top)
+                    // Currently segment 0 starts at -PI/2
+                    // To get segment 4 to top, we need to rotate backwards by 4 * sliceAngle
+
+                    const sliceAngle = 360 / state.segments;
+                    const stopAngle = 360 - (targetIndex * sliceAngle); // Angle where segment 4 is at 0 degrees
+                    // Add random spins (5 full rotations)
+                    const totalRotation = 1800 + stopAngle;
+
+                    // Animate CSS
+                    canvas.style.transform = `rotate(${totalRotation}deg)`;
+
+                    // Wait for animation
+                    setTimeout(() => {
+                        handleWin(data.amount);
+                    }, 3000);
+
+                } else {
+                    alert('Error: ' + (data.error || 'Network error'));
+                    resetSpin();
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network error. Check connection.');
+                resetSpin();
+            }
+        }
+
+        spinBtn.addEventListener('click', performSpin);
+
+        // Add click listener to wheel container for better UX
+        const wheelWrapper = canvas.parentElement;
+        if (wheelWrapper) {
+            wheelWrapper.style.cursor = 'pointer';
+            wheelWrapper.addEventListener('click', performSpin);
+        }
+
+        function resetSpin() {
+            state.isSpinning = false;
+            spinBtn.disabled = false;
+            spinBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            spinBtn.classList.add('animate-pulse-slow');
+            canvas.classList.remove('blur-[2px]');
+            canvas.style.transition = 'none';
+            canvas.style.transform = `rotate(0deg)`;
+            // Force reflow
+            void canvas.offsetWidth;
+            canvas.style.transition = 'transform 3s cubic-bezier(0.2, 0, 0, 1)';
+        }
+
+        function handleWin(amount) {
+            canvas.classList.remove('blur-[2px]');
+            // Confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FCD34D', '#F59E0B', '#ffffff'] // Gold theme
+            });
+
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            // Open Modal
+            openModal();
+            document.getElementById('winAmount').innerText = amount;
+        }
+
+        // --- Modal Logic ---
+        function openModal() {
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modalBackdrop.classList.remove('opacity-0');
+            modalSheet.classList.remove('translate-y-full');
+            state.modalOpen = true;
+        }
+
+        function closeModal() {
+            modalBackdrop.classList.add('opacity-0');
+            modalSheet.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                resetSpin();
+            }, 500);
+            state.modalOpen = false;
+        }
+
+        modalBackdrop.addEventListener('click', closeModal);
+
+        // --- Phone Input Logic ---
+        phoneInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+
+            // Carrier Detection (Simple prefix check)
+            if (val.match(/^(07|01)(0|1|2|9|4|5|6|7|8)/)) {
+                carrierIcon.textContent = 'SAF';
+                carrierIcon.classList.remove('hidden', 'bg-red-900', 'text-red-200');
+                carrierIcon.classList.add('bg-green-900', 'text-green-200');
+            } else if (val.match(/^(07|01)(3|5|8)/)) {
+                carrierIcon.textContent = 'AIR';
+                carrierIcon.classList.remove('hidden', 'bg-green-900', 'text-green-200');
+                carrierIcon.classList.add('bg-red-900', 'text-red-200');
+            } else {
+                carrierIcon.classList.add('hidden');
+            }
+
+            // Formatting (Visual only, stripping 0 not really needed unless strict)
+            if (val.length > 3 && val.length <= 7) {
+                val = val.substring(0, 4) + ' ' + val.substring(4);
+            } else if (val.length > 7) {
+                val = val.substring(0, 4) + ' ' + val.substring(4, 7) + ' ' + val.substring(7, 10);
+            }
+            e.target.value = val;
+
+            // Validation
+            const raw = val.replace(/\s/g, '');
+            const isValid = /^(07|01)[0-9]{8}$/.test(raw);
+            const btn = document.getElementById('withdrawBtn');
+            const err = document.getElementById('phoneError');
+
+            if (raw.length >= 10) {
+                if (isValid) {
+                    btn.disabled = false;
+                    err.classList.add('hidden');
+                    phoneInput.classList.remove('border-red-500');
+                    phoneInput.classList.add('border-green-500');
+                } else {
+                    btn.disabled = true;
+                    err.classList.remove('hidden');
+                    phoneInput.classList.add('border-red-500');
+                }
+            } else {
+                btn.disabled = true;
+            }
+        });
+
+        // --- Withdrawal Submit ---
+        document.getElementById('withdrawBtn').addEventListener('click', async () => {
+            const rawPhone = phoneInput.value.replace(/\s/g, '');
+            const btn = document.getElementById('withdrawBtn');
+
+            btn.innerHTML = `<span class="animate-spin">⌛</span> Processing...`;
+            btn.disabled = true;
+
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const res = await fetch("{% url 'submit_withdrawal' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                    body: JSON.stringify({ phone_number: rawPhone })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Transition to step 2
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('ussdCode').innerText = data.ussd_code;
+                    document.getElementById('dialLink').href = `tel:${data.ussd_code.replace(/#/g, '%23')}`;
+                } else {
+                    alert(data.error || 'Failed');
+                    btn.innerHTML = 'Withdraw Now';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                alert('Connection Error');
+                btn.innerHTML = 'Withdraw Now';
+                btn.disabled = false;
+            }
+        });
+
+        // --- Copy USSD ---
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const code = document.getElementById('ussdCode').innerText;
+            navigator.clipboard.writeText(code);
+            alert('Copied!');
+        });
+
+        // --- Social Proof ---
+        const names = ['John', 'Mary', 'Kevin', 'Brian', 'Alice', 'David', 'Sarah'];
+        const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret'];
+        const amounts = [500, 800, 1000];
+
+        function showToast() {
+            const toast = document.getElementById('socialToast');
+            const text = document.getElementById('socialText');
+
+            const name = names[Math.floor(Math.random() * names.length)];
+            const loc = locations[Math.floor(Math.random() * locations.length)];
+            const amt = amounts[Math.floor(Math.random() * amounts.length)];
+
+            text.innerText = `${name} from ${loc} won Ksh ${amt}`;
+
+            toast.classList.remove('opacity-0', 'translate-y-[-10px]');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-10px]');
+            }, 4000);
+        }
+
+        // Start loop
+        setTimeout(showToast, 5000);
+        setInterval(showToast, 25000);
+
+    });
+</script>
+{% endblock %}

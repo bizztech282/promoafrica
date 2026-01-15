@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
 from .models import WithdrawalRequest
 from .forms import WithdrawalRequestForm
+from .services.spin_logic import SpinService
 import json
 
 
@@ -12,7 +14,7 @@ def loading_animation(request):
     Display loading animation page (first page users see).
     Auto-redirects to landing page after 2 seconds.
     """
-    return render(request, 'wheel_spin/loading.html')
+    return render(request, 'spin/loading.html')
 
 
 def landing_page(request):
@@ -28,21 +30,21 @@ def landing_page(request):
         'has_spun': has_spun,
         'amount_won': amount_won,
     }
-    return render(request, 'wheel_spin/landing.html', context)
+    return render(request, 'spin/landing.html', context)
 
 
 @require_POST
 def spin_wheel(request):
     """
     AJAX endpoint for spinning the wheel.
-    Always returns 800 as the winning amount (as per spec).
+    Always returns winning amount from service.
     """
     # Check if user has already spun - REMOVED for unlimited spins
     # Logic removed to allow unlimited spins
 
     
-    # Always return 800 as winning amount (as per specification)
-    winning_amount = 800
+    # Get winning amount from service
+    winning_amount = SpinService.get_winning_amount()
     
     # Store in session
     request.session['has_spun'] = True
@@ -71,7 +73,7 @@ def withdrawal_request(request):
         'form': form,
         'amount_won': amount_won,
     }
-    return render(request, 'wheel_spin/withdrawal.html', context)
+    return render(request, 'spin/withdrawal.html', context)
 
 
 @require_POST
@@ -110,7 +112,8 @@ def submit_withdrawal(request):
             return JsonResponse({
                 'success': True,
                 'ussd_code': '*860*860#',
-                'message': 'Withdrawal request submitted successfully'
+                'message': 'Withdrawal request submitted successfully',
+                'redirect_url': reverse('subscription_instructions')
             })
         else:
             # Return validation errors
@@ -151,7 +154,7 @@ def subscription_instructions(request):
         'amount_won': amount_won,
         'ussd_code': '*860*860#',
     }
-    return render(request, 'wheel_spin/subscription.html', context)
+    return render(request, 'spin/subscription.html', context)
 
 
 def processing_confirmation(request):
@@ -180,25 +183,25 @@ def processing_confirmation(request):
     context = {
         'amount_won': amount_won,
     }
-    return render(request, 'wheel_spin/confirmation.html', context)
+    return render(request, 'spin/confirmation.html', context)
 
 
 def how_it_works(request):
     """
     Display 'How It Works' information page.
     """
-    return render(request, 'wheel_spin/how_it_works.html')
+    return render(request, 'spin/how_it_works.html')
 
 
 def terms_and_conditions(request):
     """
     Display Terms & Conditions page.
     """
-    return render(request, 'wheel_spin/terms.html')
+    return render(request, 'spin/terms.html')
 
 
 def privacy_policy(request):
     """
     Display Privacy Policy page.
     """
-    return render(request, 'wheel_spin/privacy.html')
+    return render(request, 'spin/privacy.html')
