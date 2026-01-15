@@ -111,27 +111,30 @@
                 </div>
 
                 <div>
-                    <h2 class="text-3xl font-bold text-white mb-2">You Won!</h2>
-                    <p class="text-4xl font-extrabold text-gold drop-shadow-md">KSH <span id="winAmount">800</span></p>
+                    <h2 class="text-3xl font-bold mb-2">
+                        <span class="text-white">Congratulations You Won</span>
+                    </h2>
+                    <p class="text-5xl font-extrabold text-gold drop-shadow-md mt-2">KSH <span id="winAmount">800</span>
+                    </p>
                 </div>
 
                 <div class="bg-gray-800/50 rounded-xl p-4 border border-white/5 text-left">
-                    <label class="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-2 ml-1">M-Pesa
-                        Number</label>
+                    <label class="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-2 ml-1">Enter M-Pesa
+                        Number Below</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span class="text-gray-400 text-lg">🇰🇪</span>
                         </div>
                         <input type="tel" id="mobileNumber"
                             class="w-full bg-black/50 border border-gray-700 rounded-lg py-4 pl-12 pr-4 text-white text-lg font-mono focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none transition-colors"
-                            placeholder="0712 345 678" maxlength="15">
+                            placeholder="e.g. 0712345678" maxlength="15">
                         <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                             <span id="carrierIcon"
                                 class="hidden text-xs font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300">SAF</span>
                         </div>
                     </div>
-                    <p class="text-red-500 text-xs mt-2 hidden flex items-center gap-1" id="phoneError">
-                        <span>⚠️</span> Please enter a valid Safaricom number
+                    <p class="text-red-400 text-sm mt-2 hidden items-center gap-1" id="phoneError">
+                        <span>⚠️</span> <span>Please enter a valid Safaricom number</span>
                     </p>
                 </div>
 
